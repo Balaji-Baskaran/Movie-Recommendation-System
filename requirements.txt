@@ -1,0 +1,8 @@
+flask
+uvicorn
+asgiref
+pandas
+numpy
+scikit-learn
+plotly
+joblib

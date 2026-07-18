@@ -1,0 +1,19 @@
+# Python virtual environment
+venv/
+
+# Bytecode files
+__pycache__/
+*.py[cod]
+
+# Dataset files should not be tracked
+dataset/
+
+# Local model files and pickles
+model/
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# OS files
+.DS_Store
+Thumbs.db
