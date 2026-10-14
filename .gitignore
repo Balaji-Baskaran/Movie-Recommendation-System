@@ -17,3 +17,13 @@ model/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Node dependencies and build
+node_modules/
+frontend/node_modules/
+frontend/dist/
+
+# Django
+backend/db.sqlite3
+*.sqlite3
+

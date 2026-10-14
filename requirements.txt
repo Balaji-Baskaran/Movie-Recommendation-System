@@ -1,4 +1,5 @@
-flask
+django
+django-cors-headers
 uvicorn
 asgiref
 pandas

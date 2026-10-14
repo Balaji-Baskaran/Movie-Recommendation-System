@@ -1,76 +1,118 @@
-# Movie Recommendation System
+# CineMatch – Movie Recommendation System
 
-A Flask + Uvicorn web app that recommends Indian movies using a pre-trained model.
+An AI-powered Movie Recommendation System migrated to a modern **React (Vite) frontend** and **Django REST backend**.
 
-> The dataset is excluded from GitHub. Download it separately and keep it in a local `dataset/` folder.
+---
 
-## Features
+## 🌟 Tech Stack
 
-- Movie search and recommendation engine
-- Filter by genre, year, and industry
-- Plotly-powered visualization
-- Flask + ASGI deployment with `uvicorn`
+- **Frontend**: React 19, Vite, Lucide Icons, Plotly.js, Vanilla CSS Design System with Dark/Light Mode.
+- **Backend**: Django 5.2, Django CORS Headers, ASGI/WSGI.
+- **Machine Learning**: Scikit-learn, Cosine Similarity, TF-IDF / Semantic Embeddings, Pandas, NumPy, Joblib.
 
-## Project structure
+---
 
-- `app.py` - main web application
-- `frontend/templates/` - HTML templates
-- `frontend/static/` - CSS and static assets
-- `libs/data_utils.py` - model loading and data helpers
-- `module/recommender.py` - recommendation engine
-- `views/` - chart and icon utilities
-- `notebook/movie_recommendation.ipynb` - training and exploration notebook
+## 📁 Project Structure
 
-## Requirements
+```text
+├── backend/                  # Django project root
+│   ├── cinematch/            # Django project settings & URL configuration
+│   │   ├── settings.py
+│   │   ├── urls.py
+│   │   └── wsgi.py
+│   ├── movies/               # Django API app
+│   │   ├── services.py       # Recommendation model loader & cache
+│   │   ├── views.py          # API endpoints (health, search, filter, options)
+│   │   ├── urls.py           # API routes
+│   │   └── tests.py          # Automated Django test suite
+│   └── manage.py
+├── frontend/                 # Modern React single-page application (Vite)
+│   ├── src/
+│   │   ├── api/client.js     # API communication with Django
+│   │   ├── components/       # Modular UI components
+│   │   │   ├── Navbar.jsx
+│   │   │   ├── Hero.jsx
+│   │   │   ├── TabBar.jsx
+│   │   │   ├── MovieSearch.jsx
+│   │   │   ├── SelectedMovieCard.jsx
+│   │   │   ├── HeartbeatChart.jsx
+│   │   │   ├── MovieCard.jsx
+│   │   │   ├── MovieDetailsModal.jsx
+│   │   │   ├── FilterSection.jsx
+│   │   │   ├── LoadingSkeleton.jsx
+│   │   │   └── EmptyState.jsx
+│   │   ├── App.jsx           # Main application state & theme orchestrator
+│   │   └── index.css         # Complete responsive design system
+│   ├── dist/                 # Production React build (served by Django or CDN)
+│   └── vite.config.js        # Vite config with backend proxy
+├── libs/                     # Data processing utilities
+├── module/                   # Recommendation engine algorithms
+├── views/                    # Plotly heartbeat chart visualizer
+├── model/                    # Serialized recommendation model (.pkl)
+├── requirements.txt          # Python dependencies
+└── README.md
+```
 
-- Python 3.9+
-- Flask
-- Uvicorn
-- asgiref
-- pandas
-- numpy
-- scikit-learn
-- plotly
-- joblib
+---
 
-Install dependencies:
+## 🚀 Getting Started
+
+### 1. Install Python Dependencies
 
 ```bash
-python -m venv venv
-venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-## Local dataset and model files
-
-This repository intentionally does not include the dataset or the trained model file.
-
-1. Download the dataset file `indian_movies.csv` from the dataset source (for example, Kaggle).
-2. Create a local folder named `dataset/` in the repository root.
-3. Place the dataset file here:
-
-```text
-dataset/indian_movies.csv
-```
-
-4. Create a local folder named `model/`.
-5. Place the trained model file here:
-
-```text
-model/movie_recommendation_model.pkl
-```
-
-If the model file is missing, use `notebook/movie_recommendation.ipynb` to train or generate it locally.
-
-## Run the app
+### 2. Run the Django Backend
 
 ```bash
-uvicorn app:asgi_app --reload --port 8000
+cd backend
+python manage.py runserver 8000
 ```
 
-Open your browser:
+The Django API is accessible at `http://127.0.0.1:8000/api/health`.
 
-```text
-http://localhost:8000/
+### 3. Run the React Frontend (Development Mode)
+
+In a new terminal window:
+
+```bash
+cd frontend
+npm install
+npm run dev
 ```
 
+Open your browser at `http://localhost:5173/` (or port assigned by Vite).
+
+---
+
+## ⚡ Direct Production Serving via Django
+
+Django can serve the built React app directly:
+
+```bash
+cd frontend
+npm run build
+cd ../backend
+python manage.py runserver 8000
+```
+
+Open `http://localhost:8000/` to use the full React interface directly from Django.
+
+---
+
+## 🧪 Testing
+
+Run backend tests:
+
+```bash
+cd backend
+python manage.py test
+```
+
+Build and test frontend:
+
+```bash
+cd frontend
+npm run build
+```
