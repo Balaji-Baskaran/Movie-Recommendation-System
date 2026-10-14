@@ -11,7 +11,7 @@ from .recommender import recommend
 from .chart_heartbeat import make_heartbeat_chart
 from .services import get_service
 
-logger = logging.getLogger("cinematch")
+logger = logging.getLogger("movies")
 
 
 def index(request):
@@ -21,7 +21,7 @@ def index(request):
         with open(dist_index, "r", encoding="utf-8") as f:
             return HttpResponse(f.read(), content_type="text/html")
     return HttpResponse(
-        "<h1>CineMatch Django Backend Running</h1><p>Run 'npm run build' in frontend/ to serve React directly here, or run 'npm run dev' on port 5173.</p>"
+        "<h1>Movie Recommendation System Backend Running</h1><p>Run 'npm run build' in frontend/ to serve React directly here, or run 'npm run dev' on port 5173.</p>"
     )
 
 

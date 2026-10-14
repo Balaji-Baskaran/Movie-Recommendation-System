@@ -8,7 +8,7 @@ from .data_utils import load_model, prepare_data
 from .recommender import recommend
 from .chart_heartbeat import make_heartbeat_chart
 
-logger = logging.getLogger("cinematch")
+logger = logging.getLogger("movies")
 
 
 class MovieRecommenderService:

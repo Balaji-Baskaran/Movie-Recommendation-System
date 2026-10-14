@@ -1,5 +1,5 @@
 """
-URL configuration for cinematch project.
+URL configuration for core project.
 """
 from django.contrib import admin
 from django.urls import path, include, re_path

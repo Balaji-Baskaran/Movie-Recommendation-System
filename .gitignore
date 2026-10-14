@@ -14,9 +14,11 @@ __pycache__/
 # Jupyter notebook checkpoints
 .ipynb_checkpoints/
 
-# Node dependencies (DO NOT COMMIT node_modules)
+# Node dependencies and build artifacts (DO NOT COMMIT node_modules or dist)
 node_modules/
 frontend/node_modules/
+dist/
+frontend/dist/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

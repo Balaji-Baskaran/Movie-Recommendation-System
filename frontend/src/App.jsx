@@ -19,7 +19,7 @@ import {
   filterMovies,
 } from './api/client';
 
-const THEME_KEY = 'cinematch-theme';
+const THEME_KEY = 'movie-recommender-theme';
 
 export default function App() {
   // Theme state

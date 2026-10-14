@@ -9,7 +9,7 @@ export default function Navbar({ theme, onToggleTheme }) {
           <Clapperboard size={22} strokeWidth={2.2} />
         </div>
         <div className="nav-title-group">
-          <span className="nav-title">CineMatch</span>
+          <span className="nav-title">Movie Recommender</span>
         </div>
       </div>
 
