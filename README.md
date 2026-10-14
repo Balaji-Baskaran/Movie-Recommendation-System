@@ -24,7 +24,12 @@ An AI-powered Movie Recommendation System migrated to a modern **React (Vite) fr
 │   │   ├── services.py       # Recommendation model loader & cache
 │   │   ├── views.py          # API endpoints (health, search, filter, options)
 │   │   ├── urls.py           # API routes
-│   │   └── tests.py          # Automated Django test suite
+│   │   ├── tests.py          # Automated Django test suite
+│   │   ├── recommender.py    # Cosine similarity recommendation algorithm
+│   │   ├── data_utils.py     # Model loading and embeddings normalizer
+│   │   └── chart_heartbeat.py # Plotly heartbeat chart visualizer
+│   ├── model/                # Serialized recommendation models (.pkl)
+│   ├── dataset/              # Indian movies dataset
 │   └── manage.py
 ├── frontend/                 # Modern React single-page application (Vite)
 │   ├── src/
@@ -43,12 +48,8 @@ An AI-powered Movie Recommendation System migrated to a modern **React (Vite) fr
 │   │   │   └── EmptyState.jsx
 │   │   ├── App.jsx           # Main application state & theme orchestrator
 │   │   └── index.css         # Complete responsive design system
-│   ├── dist/                 # Production React build (served by Django or CDN)
+│   ├── dist/                 # Production React build (served by Django)
 │   └── vite.config.js        # Vite config with backend proxy
-├── libs/                     # Data processing utilities
-├── module/                   # Recommendation engine algorithms
-├── views/                    # Plotly heartbeat chart visualizer
-├── model/                    # Serialized recommendation model (.pkl)
 ├── requirements.txt          # Python dependencies
 └── README.md
 ```

@@ -7,8 +7,8 @@ from django.views.decorators.http import require_GET, require_POST, require_http
 
 from pathlib import Path
 from django.conf import settings
-from module.recommender import recommend
-from views.chart_heartbeat import make_heartbeat_chart
+from .recommender import recommend
+from .chart_heartbeat import make_heartbeat_chart
 from .services import get_service
 
 logger = logging.getLogger("cinematch")

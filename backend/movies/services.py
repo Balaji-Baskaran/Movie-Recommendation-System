@@ -4,9 +4,9 @@ from pathlib import Path
 import pandas as pd
 from django.conf import settings
 
-from libs.data_utils import load_model, prepare_data
-from module.recommender import recommend
-from views.chart_heartbeat import make_heartbeat_chart
+from .data_utils import load_model, prepare_data
+from .recommender import recommend
+from .chart_heartbeat import make_heartbeat_chart
 
 logger = logging.getLogger("cinematch")
 
@@ -15,7 +15,9 @@ class MovieRecommenderService:
     _instance = None
 
     def __init__(self):
-        model_path = Path(settings.ROOT_DIR) / "model" / "movie_recommendation_model.pkl"
+        model_path = Path(settings.BASE_DIR) / "model" / "movie_recommendation_model.pkl"
+        if not model_path.exists():
+            model_path = Path(settings.ROOT_DIR) / "model" / "movie_recommendation_model.pkl"
         logger.info(f"Loading recommendation model from {model_path}...")
         
         self._raw = load_model(str(model_path))
