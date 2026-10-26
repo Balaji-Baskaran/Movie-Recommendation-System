@@ -14,6 +14,9 @@ __pycache__/
 # Jupyter notebook checkpoints
 .ipynb_checkpoints/
 
+# Model pickle files (large binary assets)
+*.pkl
+
 # Node dependencies and build artifacts (DO NOT COMMIT node_modules or dist)
 node_modules/
 frontend/node_modules/
