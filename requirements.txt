@@ -1,7 +1,5 @@
-django
-django-cors-headers
-uvicorn
-asgiref
+Flask
+flask-cors
 pandas
 numpy
 scikit-learn
