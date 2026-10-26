@@ -2,7 +2,6 @@ import json
 import logging
 from pathlib import Path
 import pandas as pd
-from django.conf import settings
 
 from .data_utils import load_model, prepare_data
 from .recommender import recommend
@@ -15,17 +14,31 @@ class MovieRecommenderService:
     _instance = None
 
     def __init__(self):
-        model_path = Path(settings.BASE_DIR) / "model" / "movie_recommendation_model.pkl"
+        base_dir = Path(__file__).resolve().parent.parent
+        model_path = base_dir / "model" / "movie_recommendation_model.pkl"
         if not model_path.exists():
-            model_path = Path(settings.ROOT_DIR) / "model" / "movie_recommendation_model.pkl"
-        logger.info(f"Loading recommendation model from {model_path}...")
-        
-        self._raw = load_model(str(model_path))
-        self.df, self.emb_norm = prepare_data(self._raw)
-        self.df["genre_set"] = self.df["genre_list"].apply(
-            lambda x: set(g.lower() for g in x if g) if isinstance(x, list) else set()
-        )
-        logger.info(f"Model loaded │ {len(self.df)} movies in dataset")
+            model_path = base_dir.parent / "backend" / "model" / "movie_recommendation_model.pkl"
+        if not model_path.exists():
+            model_path = Path("model/movie_recommendation_model.pkl")
+
+        if model_path.exists():
+            logger.info(f"Loading recommendation model from {model_path}...")
+            self._raw = load_model(str(model_path))
+            self.df, self.emb_norm = prepare_data(self._raw)
+            self.df["genre_set"] = self.df["genre_list"].apply(
+                lambda x: set(g.lower() for g in x if g) if isinstance(x, list) else set()
+            )
+            logger.info(f"Model loaded │ {len(self.df)} movies in dataset")
+        else:
+            logger.warning(
+                f"Model file not found at {model_path}. "
+                "Please run movie_recommondation.ipynb or provide model/movie_recommendation_model.pkl."
+            )
+            self.df = pd.DataFrame(columns=[
+                "title", "year", "industry", "rating", "popularity", "overview", "poster_path", "genre_list", "genre_set"
+            ])
+            import numpy as np
+            self.emb_norm = np.zeros((0, 0), dtype=np.float32)
 
         self.industries = sorted(self.df["industry"].dropna().unique().tolist())
         self.genres, self.years = self._get_filter_options()

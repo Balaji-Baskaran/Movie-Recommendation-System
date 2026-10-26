@@ -1,73 +1,56 @@
-import json
 import logging
 import pandas as pd
-from django.http import JsonResponse, HttpResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_GET, require_POST, require_http_methods
+from flask import Blueprint, jsonify, request, Response
 
-from pathlib import Path
-from django.conf import settings
 from .recommender import recommend
 from .chart_heartbeat import make_heartbeat_chart
 from .services import get_service
 
 logger = logging.getLogger("movies")
 
-
-def index(request):
-    """Serve the built React single-page app."""
-    dist_index = Path(settings.ROOT_DIR) / "frontend" / "dist" / "index.html"
-    if dist_index.exists():
-        with open(dist_index, "r", encoding="utf-8") as f:
-            return HttpResponse(f.read(), content_type="text/html")
-    return HttpResponse(
-        "<h1>Movie Recommendation System Backend Running</h1><p>Run 'npm run build' in frontend/ to serve React directly here, or run 'npm run dev' on port 5173.</p>"
-    )
+movies_bp = Blueprint("movies", __name__)
 
 
-
-@require_GET
-def api_health(request):
+@movies_bp.route("/health", methods=["GET"])
+def api_health():
     """Health check endpoint."""
     service = get_service()
-    return JsonResponse({
+    return jsonify({
         "status": "healthy",
-        "service": "Movie Recommendation System (Django API)",
+        "service": "Movie Recommendation System (Flask API)",
         "movies_loaded": len(service.df),
     })
 
 
-@require_GET
-def api_movies(request):
+@movies_bp.route("/movies", methods=["GET"])
+def api_movies():
     """Return list of all movies for the search dropdown."""
     service = get_service()
-    return HttpResponse(service.movie_options_json, content_type="application/json")
+    return Response(service.movie_options_json, mimetype="application/json")
 
 
-@require_GET
-def api_filter_options(request):
+@movies_bp.route("/filter-options", methods=["GET"])
+def api_filter_options():
     """Return genre, year, and industry options for the filter dropdowns."""
     service = get_service()
-    return HttpResponse(service.filter_options_json, content_type="application/json")
+    return Response(service.filter_options_json, mimetype="application/json")
 
 
-@csrf_exempt
-@require_POST
-def api_search(request):
+@movies_bp.route("/search", methods=["POST"])
+def api_search():
     """
     POST body: { "movie_idx": int, "n": int }
     Returns: selected movie info + chart JSON + top-N recommendations
     """
-    try:
-        body = json.loads(request.body.decode("utf-8") if request.body else "{}")
-    except json.JSONDecodeError:
-        return JsonResponse({"error": "Invalid JSON format"}, status=400)
+    body = request.get_json(silent=True)
+    if body is None or not isinstance(body, dict):
+        return jsonify({"error": "Invalid JSON format"}), 400
 
     try:
         movie_idx = int(body.get("movie_idx", 0))
         n = int(body.get("n", 10))
     except (ValueError, TypeError):
-        return JsonResponse({"error": "Invalid parameters"}, status=400)
+        return jsonify({"error": "Invalid parameters"}), 400
 
     service = get_service()
     df = service.df
@@ -75,7 +58,7 @@ def api_search(request):
 
     if movie_idx < 0 or movie_idx >= len(df):
         logger.warning(f"SEARCH │ Invalid movie_idx={movie_idx} requested")
-        return JsonResponse({"error": "Invalid movie index"}, status=400)
+        return jsonify({"error": "Invalid movie index"}), 400
 
     sm = df.iloc[movie_idx]
     movie_title = str(sm["title"])
@@ -85,7 +68,6 @@ def api_search(request):
         f"SEARCH │ '{movie_title}' ({movie_year}) │ idx={movie_idx} │ top-{n} recommendations requested"
     )
 
-    # Selected movie payload
     selected = {
         "title": movie_title,
         "industry": str(sm["industry"]),
@@ -97,34 +79,30 @@ def api_search(request):
         "genre_list": sm["genre_list"] if isinstance(sm.get("genre_list"), list) else [],
     }
 
-    # Recommendations
     recs = recommend(movie_idx, df, emb_norm, n=n)
 
     top_titles = ", ".join(f"'{r['title']}'" for r in recs[:3])
     logger.info(f"RESULT │ '{movie_title}' │ Top matches: {top_titles} ...")
 
-    # Heartbeat chart → JSON
     fig = make_heartbeat_chart(recs, sm["title"])
     chart_json = fig.to_json()
 
-    return JsonResponse({
+    return jsonify({
         "selected": selected,
         "recommendations": recs,
         "chart_json": chart_json,
     })
 
 
-@csrf_exempt
-@require_POST
-def api_filter(request):
+@movies_bp.route("/filter", methods=["POST"])
+def api_filter():
     """
     POST body: { "genres": [...], "years": [...], "industries": [...] }
     Returns: { "movies": [...] }
     """
-    try:
-        body = json.loads(request.body.decode("utf-8") if request.body else "{}")
-    except json.JSONDecodeError:
-        return JsonResponse({"error": "Invalid JSON format"}, status=400)
+    body = request.get_json(silent=True)
+    if body is None or not isinstance(body, dict):
+        return jsonify({"error": "Invalid JSON format"}), 400
 
     sel_genres = body.get("genres", [])
     sel_years = body.get("years", [])
@@ -154,7 +132,7 @@ def api_filter(request):
 
     if filtered.empty:
         logger.warning("FILTER │ No results found for applied filters")
-        return JsonResponse({"movies": [], "error": "No movies found matching these criteria."})
+        return jsonify({"movies": [], "error": "No movies found matching these criteria."})
 
     filtered = filtered.sort_values(
         by=["rating", "popularity"], ascending=[False, False]
@@ -177,4 +155,4 @@ def api_filter(request):
             "genre_list": row["genre_list"] if isinstance(row.get("genre_list"), list) else [],
         })
 
-    return JsonResponse({"movies": movies})
+    return jsonify({"movies": movies})
